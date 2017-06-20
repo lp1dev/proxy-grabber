@@ -65,7 +65,7 @@ def     save_results(results):
 
 def     main():
   proxies = seek_proxies()
-  results = test_proxies(proxies, timeout=5)
+  results = test_proxies(proxies, timeout=5, threads=THREADS)
   save_results(results)
 
 if __name__ == '__main__':

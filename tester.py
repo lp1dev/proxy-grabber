@@ -1,5 +1,9 @@
 import requests
+import concurrent.futures
+import asyncio
 import time
+
+results = []
 
 def test_proxy(url, proxy, timeout):
     http_proxy  = "http://%s" %proxy
@@ -25,9 +29,21 @@ def test_proxy(url, proxy, timeout):
         print(e)
         return {"error": "Proxy down", "code": 2}
 
-def test_proxies(proxies, timeout):
-    results = []
+async def loop_test_proxies(proxies, timeout, threads):
+    global results
     url = "https://monip.org"
-    for proxy in proxies:
-        results.append(test_proxy(url, proxy, timeout))
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+        loop = asyncio.get_event_loop()
+        futures = []
+        for proxy in proxies:
+            futures.append(loop.run_in_executor(executor, test_proxy, url, proxy, timeout))
+        for response in await asyncio.gather(*futures):
+            results.append(response)
+            pass
+
+
+def test_proxies(proxies, timeout, threads):
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(loop_test_proxies(proxies, timeout, threads))
     return results
