@@ -6,21 +6,15 @@ import json
 import concurrent.futures
 import requests
 from searx.api import search
+from tester import test_proxies
 
 THREADS=10
 FILE_TYPES="txt"
+OUTPUT_FILE="report.json"
 
 def     get_from_cache():
   with open("cache/results.json") as f:
     return json.loads(f.read())
-
-def     run(files, max_workers=THREADS):
-  with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-    loop = asyncio.get_event_loop()
-    futures = loop.run_in_executor()
-#    for response in await asyncio.gather(*futures):
-#      pass
-  return 0
 
 def     get_proxies(files):
   proxies = []
@@ -65,8 +59,14 @@ def     seek_proxies():
   print("Found %i proxies" %(len(proxies)))
   return proxies
 
+def     save_results(results):
+  with open(OUTPUT_FILE, "a+") as f:
+    f.write(json.dumps(results))
+
 def     main():
-  print(seek_proxies())
+  proxies = seek_proxies()
+  results = test_proxies(proxies, timeout=5)
+  save_results(results)
 
 if __name__ == '__main__':
   main()
