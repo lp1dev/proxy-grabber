@@ -27,7 +27,6 @@ def test_proxy(url, proxy, timeout):
             return {"success": "proxy answered in %s" %(end-start), "time": end-start, "detected": False}
     except Exception as e:
         print(e)
-        return {"error": "Proxy down", "code": 2}
 
 async def loop_test_proxies(proxies, timeout, threads):
     global results
@@ -39,7 +38,8 @@ async def loop_test_proxies(proxies, timeout, threads):
         for proxy in proxies:
             futures.append(loop.run_in_executor(executor, test_proxy, url, proxy, timeout))
         for response in await asyncio.gather(*futures):
-            results.append(response)
+            if response is not None:
+                results.append(response)
             pass
 
 
