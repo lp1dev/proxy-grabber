@@ -22,9 +22,9 @@ def test_proxy(url, proxy, timeout):
         end = time.time()
         print("Proxy seems UP !\nAnswered in : %s" %(end-start))
         if "detected" in r.text:
-            return {"success": "proxy answered in %s" %(end-start), "time": end-start, "detected": True}
+            return {"success": "proxy answered in %s" %(end-start), "time": end-start, "detected": True, "proxy": proxy}
         else:
-            return {"success": "proxy answered in %s" %(end-start), "time": end-start, "detected": False}
+            return {"success": "proxy answered in %s" %(end-start), "time": end-start, "detected": False, "proxy": proxy}
     except Exception as e:
         print(e)
 
